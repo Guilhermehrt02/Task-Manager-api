@@ -1,9 +1,10 @@
-import { Controller, Get, Post, UseGuards, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { QueryTaskDto } from './dto/query-task.dto';
 
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
@@ -16,8 +17,11 @@ export class TasksController {
     }
 
     @Get()
-    findAll(@GetUser() user: any) {
-        return this.tasksService.findAll(user.userId);
+    findAll(
+        @GetUser() user: any,
+        @Query() query: QueryTaskDto
+    ) {
+        return this.tasksService.findAll(user.userId, query);
     }
 
     @Patch(':id')

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { last } from 'rxjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -14,12 +15,38 @@ export class TasksService {
         })
     }
 
-    findAll(userId: string) {
-        return (this.prisma as any).task.findMany({
-            where: {
-                userId
+    async findAll(userId: string, query: any) {
+        const { completed, page = 1, limit = 10 } = query;
+        
+        const where: any = {
+            userId
+        }
+
+        if (completed !== undefined) {
+            where.completed = completed === 'true';
+        }
+
+        const tasks = await (this.prisma as any).task.findMany({
+            where,
+            skip: (page - 1) * limit,
+            take: limit,
+            orderBy: {
+                createdAt: 'desc'
             }
         })
+
+        const total = await (this.prisma as any).task.count({
+            where
+        })
+
+        return {
+            data: tasks,
+            meta: {
+                total,
+                page,
+                lastPage: Math.ceil(total / limit)
+            }
+        }
     }
 
     async update(id: string, userId: string, data: any) {
