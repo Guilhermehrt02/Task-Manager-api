@@ -8,6 +8,10 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: ['http://localhost:4000', 'http://localhost:4200'],
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Automatically remove properties that do not have any decorators (present in the DTO)

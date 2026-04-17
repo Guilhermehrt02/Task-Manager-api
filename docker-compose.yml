@@ -14,5 +14,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  app:
+    build: .
+    container_name: taskmanager_api
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/taskmanager?schema=public"
+      JWT_SECRET: "fzaOvsR26XJv/dvgmaqIwBisRAltCBCIN+AdVUunQ3c="
+
 volumes:
   postgres_data:
